@@ -5,7 +5,8 @@ const { SpecReporter } = require('jasmine-spec-reporter');
 
 exports.config = {
   allScriptsTimeout: 11000,
-  specs: ['./src/**/*.e2e-spec.ts'],
+  // specs: ['./src/**/*.e2e-spec.ts'],
+  specs: ['./src/**/account-details.e2e-spec.ts'],
   capabilities: {
     browserName: 'chrome'
   },
@@ -14,7 +15,7 @@ exports.config = {
   framework: 'jasmine',
   jasmineNodeOpts: {
     showColors: true,
-    defaultTimeoutInterval: 30000,
+    defaultTimeoutInterval: 120000,
     print: function() {}
   },
   SELENIUM_PROMISE_MANAGER: false,

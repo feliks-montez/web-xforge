@@ -1,4 +1,4 @@
-import { browser, by, element, ExpectedConditions, promise, protractor } from 'protractor';
+import { browser, by, element, ExpectedConditions, protractor } from 'protractor';
 
 import { AppPage } from './app.po';
 
@@ -33,7 +33,7 @@ export class LoginPage {
     } else {
       await this.loginButton.click();
     }
-    await browser.wait(ExpectedConditions.visibilityOf(AppPage.homepage.homepageHeader), 6000);
+    await browser.wait(ExpectedConditions.visibilityOf(AppPage.homepage.homepageHeader), 5000);
   }
 
   async loginAsAdmin() {
