@@ -43,4 +43,10 @@ export class ScrVers {
 
   clearExcludedVerses() {}
   clearVerseSegments() {}
+  getLastChapter(bookNum: number): number {
+    return -1;
+  }
+  getLastVerse(bookNum: number, chapterNum: number): number {
+    return -1;
+  }
 }

@@ -1,12 +1,14 @@
+import { BookSet } from './book-set';
+
 /**
  * Canon information. Also, contains static information on complete list of books and localization.
  *
- * Partially conveted from https://github.com/sillsdev/libpalaso/blob/master/SIL.Scripture/Canon.cs
+ * Partially converted from https://github.com/sillsdev/libpalaso/blob/master/SIL.Scripture/Canon.cs
  */
 export class Canon {
   /**
    * Array of all book ids.
-   *  BE SURE TO UPDATE ISCANONICAL above whenever you change this array.
+   * BE SURE TO UPDATE ISCANONICAL above whenever you change this array.
    */
   static readonly allBookIds: string[] = [
     'GEN',
@@ -164,8 +166,17 @@ export class Canon {
     'NDX'
   ];
 
+  /**
+   * Index of the first book. Abstracting this makes code less fragile.
+   */
   static readonly firstBook = 1;
+
+  /**
+   * Number of the last book (1-based).
+   */
   static readonly lastBook = Canon.allBookIds.length;
+
+  static readonly extraBooks: string[] = ['XXA', 'XXB', 'XXC', 'XXD', 'XXE', 'XXF', 'XXG'];
 
   /**
    * Array of the English names of all books
@@ -312,12 +323,14 @@ export class Canon {
 
   // Used for fast look up of book IDs to the book number
   private static readonly bookNumbers: BookNumbers = Canon.createBookNumbers();
+  private static scriptureBooks: BookSet;
+  private static allBooks: BookSet;
 
   /**
    * Gets the 1-based number of the specified book
    * This is a fairly performance-critical method.
-   * @param string id
-   * @param boolean ignoreCase
+   * @param id
+   * @param ignoreCase
    * @returns book number, or 0 if id doesn't exist
    */
   static bookIdToNumber(id: string, ignoreCase: boolean = true): number {
@@ -331,18 +344,135 @@ export class Canon {
   }
 
   /**
-   * Gets the id if a book based on its 1-based number
-   * @param number number Book number (this is 1-based, not an index)
-   * @param string errorValue The string to return if the book number does not correspond to a valid book
+   * Check if a book id is valid
+   * @param id id to check
+   * @returns true if book id is valid
    */
-  static bookNumberToId(number: number, errorValue: string = '***'): string {
-    const index: number = number - 1;
+  static isBookIdValid(id: string): boolean {
+    return this.bookIdToNumber(id) > 0;
+  }
+
+  /**
+   * Check if book id is in western NT
+   * @param idOrNum book Id or book number
+   */
+  static isBookNT(idOrNum: string | number): boolean {
+    const num: number = typeof idOrNum === 'number' ? idOrNum : this.bookIdToNumber(idOrNum as string);
+    return num >= 40 && num <= 66;
+  }
+
+  /**
+   * Check if book id is in Protestant OT
+   * @param idOrNum book Id or book number
+   */
+  static isBookOT(idOrNum: string | number): boolean {
+    const num: number = typeof idOrNum === 'number' ? idOrNum : this.bookIdToNumber(idOrNum as string);
+    return num <= 39;
+  }
+
+  static isBookOTNT(idOrNum: string | number): boolean {
+    const num: number = typeof idOrNum === 'number' ? idOrNum : this.bookIdToNumber(idOrNum as string);
+    return num <= 66;
+  }
+
+  /**
+   * Check if book is in Deutero Canon
+   * @param idOrNum book Id or book number
+   */
+  static isBooDC(idOrNum: string | number): boolean {
+    const num: number = typeof idOrNum === 'number' ? idOrNum : this.bookIdToNumber(idOrNum as string);
+    return this.isCanonical(num) && !this.isBookOTNT(num);
+  }
+  /* CS methods remaining to be converted. They rely on class BookSet.
+  /// <summary>
+  /// Enumerates all book numbers
+  /// </summary>
+  static get allBookNumbers():
+  {
+    get
+    {
+      for (int i = 1; i <= AllBookIds.Length; i++)
+        yield return i;
+    }
+  }
+
+  /// <summary>
+  /// Gets a bookset containing only scripture books, i.e. not XXA, etc.
+  /// </summary>
+  public static BookSet ScriptureBooks
+  {
+    get
+    {
+      if (scriptureBooks == null)
+      {
+        // This must be lazy as the BookSet constructor depends on Canon. If we try to initialize scriptureBooks
+        // in the constructor, then we have a chicken-and-egg problem where the Canon can not initialize without a
+        // BookSet and a BookSet can not initialize without a Canon.
+        scriptureBooks = new BookSet();
+        foreach (int bookNum in AllBookNumbers.Where(bookNum => IsCanonical(bookNum) && !IsObsolete(bookNum)))
+          scriptureBooks.Add(bookNum);
+      }
+      return scriptureBooks;
+    }
+  }
+
+  /// <summary>
+  /// Gets a bookset containing all books that are not obsolete.
+  /// </summary>
+  public static BookSet AllBooks
+  {
+    get
+    {
+      if (allBooks == null)
+      {
+        allBooks = new BookSet();
+        foreach (int bookNum in AllBookNumbers.Where(bookNum => !IsObsolete(bookNum)))
+          allBooks.Add(bookNum);
+      }
+      return allBooks;
+    }
+  }
+*/
+  /**
+   * Gets the id if a book based on its 1-based number
+   * @param num Book number (this is 1-based, not an index)
+   * @param errorValue The string to return if the book number does not correspond to a valid book
+   */
+  static bookNumberToId(num: number, errorValue: string = '***'): string {
+    const index: number = num - 1;
 
     if (index < 0 || index >= Canon.allBookIds.length) {
       return errorValue;
     }
 
     return Canon.allBookIds[index];
+  }
+
+  /**
+   * @param idOrNum book Id or book number
+   */
+  static bookNumberToEnglishName(idOrNum: string | number): string {
+    const num: number = typeof idOrNum === 'number' ? idOrNum : this.bookIdToNumber(idOrNum as string);
+    // FB 36586 restored check for bad data that was removed earlier in 7.5
+    if (num <= 0 || num > this.lastBook) {
+      return '******';
+    }
+
+    return this.allBookEnglishNames[num - 1];
+  }
+
+  /**
+   * True if this is a canonical book id, as opposed to front matter etc.
+   * @param idOrNum book Id or book number
+   */
+  static isCanonical(idOrNum: string | number): boolean {
+    const id: string = typeof idOrNum === 'string' ? idOrNum : this.bookNumberToId(idOrNum as number);
+    return this.isBookIdValid(id) && !this.nonCanonicalIds.includes(id);
+  }
+
+  static isExtraMaterial(idOrNum: string | number): boolean {
+    const id: string = typeof idOrNum === 'string' ? idOrNum : this.bookNumberToId(idOrNum as number);
+    return this.isBookIdValid(id) && this.nonCanonicalIds.includes(id);
   }
 
   static isObsolete(bookNum: number): boolean {

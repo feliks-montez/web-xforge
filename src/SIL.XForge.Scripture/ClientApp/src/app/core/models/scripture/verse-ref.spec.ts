@@ -21,7 +21,7 @@ describe('VerseRef Model', () => {
   it('should construct', () => {
     let vref: VerseRef = new VerseRef(1, 2, 3, ScrVers.Septuagint);
     expect(vref.valid).toBe(true);
-    // expect(vref.BBBCCCVVV).toEqual(0x001002003);
+    expect(vref.BBBCCCVVV).toEqual(1002003);
     // expect(vref.BBBCCCVVVS).toEqual('001002003');
     expect(vref.bookNum).toEqual(1);
     expect(vref.book).toEqual('GEN');
@@ -31,7 +31,7 @@ describe('VerseRef Model', () => {
     expect(vref.versification).toEqual(ScrVers.Septuagint);
 
     vref = new VerseRef(4, 5, 6);
-    // expect(vref.BBBCCCVVV).toEqual(0x004005006);
+    expect(vref.BBBCCCVVV).toEqual(4005006);
     // expect(vref.BBBCCCVVVS).toEqual('004005006');
     expect(vref.bookNum).toEqual(4);
     expect(vref.book).toEqual('NUM');
@@ -42,7 +42,7 @@ describe('VerseRef Model', () => {
     vref = new VerseRef();
     expect(vref.isDefault).toBe(true);
     expect(vref.valid).toBe(false);
-    // expect(vref.BBBCCCVVV).toEqual(0x000000000);
+    expect(vref.BBBCCCVVV).toEqual(0);
     // expect(vref.BBBCCCVVVS).toEqual('000000000');
     expect(vref.bookNum).toEqual(0);
     expect(vref.book).toEqual('');
@@ -62,7 +62,7 @@ describe('VerseRef Model', () => {
 
     vref = VerseRef.fromStr('LUK 3:4b-5a', ScrVers.Vulgate);
     expect(vref.valid).toBe(true);
-    // expect(vref.BBBCCCVVV).toEqual(0x042003004);
+    expect(vref.BBBCCCVVV).toEqual(42003004);
     // expect(vref.BBBCCCVVVS).toEqual('042003004b');
     expect(vref.bookNum).toEqual(42);
     expect(vref.chapterNum).toEqual(3);
