@@ -164,6 +164,10 @@ export class CheckingOverviewComponent extends SubscriptionDisposable implements
     return count ? count + ' answers' : '';
   }
 
+  archiveQuestion(textId?: string, chapterNumber?: number, questionIndex: number = 0): void {
+    console.log('archiveQuestion', textId, chapterNumber, questionIndex);
+  }
+
   questionDialog(editMode = false, textId?: string, chapterNumber?: number, questionIndex: number = 0): void {
     let newQuestion: Question = { id: undefined, ownerRef: undefined, projectRef: undefined };
     let id: TextJsonDataId;
