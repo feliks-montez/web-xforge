@@ -1,3 +1,4 @@
+import { VerseRefData } from '../verse-ref-data';
 import { Canon } from './canon';
 import { ScrVers } from './scr-vers';
 import { ScrVersType } from './versification';
