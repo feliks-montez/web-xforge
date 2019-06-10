@@ -136,16 +136,35 @@
           </div>
         </div>
 -->
-          <div fxLayout="row" fxLayoutAlign="start center">
+          <div fxLayout="row" fxLayoutGap="1em">
             <div fxFlex>
               <mdc-form-field>
-                <mdc-text-field type="date" label="Birthday" formControlName="birthday" (change)="update('birthday')">
-                  <mdc-icon mdcTextFieldIcon trailing>event</mdc-icon>
-                </mdc-text-field>
+                <mdc-text-field type="date" label="Birthday" formControlName="birthday"> </mdc-text-field>
               </mdc-form-field>
             </div>
             <div>
-              <app-write-status [formGroup]="formGroup" [state]="controlStates.get('birthday')"></app-write-status>
+              <button
+                id="birthday-update-button"
+                [disabled]="
+                  controlStates.get('birthday') !== elementState.Dirty &&
+                  controlStates.get('birthday') !== elementState.Error
+                "
+                mdc-button
+                outlined
+                (click)="updateClicked('birthday')"
+                class="update-button"
+              >
+                <app-write-status [formGroup]="formGroup" [state]="controlStates.get('birthday')"></app-write-status>
+                <mdc-icon
+                  id="birthday-button-icon"
+                  *ngIf="
+                    controlStates.get('birthday') === elementState.InSync ||
+                    controlStates.get('birthday') === elementState.Dirty
+                  "
+                  >send</mdc-icon
+                >
+                &nbsp;Update
+              </button>
             </div>
           </div>
 
@@ -167,29 +186,30 @@
             </mdc-form-field>
             <app-write-status [formGroup]="formGroup" [state]="controlStates.get('gender')"></app-write-status>
           </div>
-          <div
-            *ngIf="isLinkedToParatext"
-            fxLayout="row"
-            fxLayoutAlign="space-between center"
-            fxLayoutGap="1em"
-            id="paratext-link"
-          >
-            <div>Linked to Paratext account</div>
-            <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="0.5em">
-              <label id="paratext-link-label">
-                <strong>{{ paratextUsername }}</strong>
-              </label>
-              <button mdc-button id="unlink-paratext-button" class="unlink-button" (click)="deleteParatextLink()">
-                <mdc-icon>clear</mdc-icon> <span fxHide.lt-md>Remove link</span>
+          <div class="linked-accounts">
+            <div
+              *ngIf="isLinkedToParatext"
+              fxLayout="row"
+              fxLayoutAlign="space-between center"
+              fxLayoutGap="1em"
+              id="paratext-link"
+            >
+              <div>Linked to Paratext account</div>
+              <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="0.5em">
+                <label id="paratext-link-label">
+                  <strong>{{ paratextUsername }}</strong>
+                </label>
+                <button mdc-button id="unlink-paratext-button" class="unlink-button" (click)="deleteParatextLink()">
+                  <mdc-icon>clear</mdc-icon> <span fxHide.lt-md>Remove link</span>
+                </button>
+              </div>
+            </div>
+            <div *ngIf="!isLinkedToParatext" id="paratext-link">
+              <button mdc-button outlined id="connect-paratext-button" (click)="logInWithParatext()">
+                <mdc-icon>link</mdc-icon> Connect to Paratext
               </button>
             </div>
-          </div>
-          <div *ngIf="!isLinkedToParatext" id="paratext-link">
-            <button mdc-button outlined id="connect-paratext-button" (click)="logInWithParatext()">
-              <mdc-icon>link</mdc-icon> Connect to Paratext
-            </button>
-          </div>
-          <!--Add this back in once login with Google (SF-77) is finished
+            <!--Add this back in once login with Google (SF-77) is finished
       <div
         *ngIf="isLinkedToGoogle"
         fxLayout="row"
@@ -211,6 +231,7 @@
         <button mdc-button outlined><mdc-icon>link</mdc-icon> Connect to Google</button>
       </div>
       -->
+          </div>
         </div>
       </form>
     </div>
