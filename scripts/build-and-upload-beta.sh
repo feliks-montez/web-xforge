@@ -22,6 +22,12 @@ cat <<EOF > $BUILD_OUTPUT/app/secrets.json
 }
 EOF
 
+cat <<EOF > $BUILD_OUTPUT/app/version.json
+{
+  "version": "$BUILD_NUMBER"
+}
+EOF
+
 sudo chown -R :www-data $BUILD_OUTPUT/app
 
 rsync -progzlt --chmod=Dug=rwx,Fug=rwx,o-rwx --delete-during --stats --rsync-path="sudo rsync" --rsh="ssh -v -i $DEPLOY_CREDENTIALS" artifacts/app/ root@$DEPLOY_DESTINATION:$DEPLOY_PATH/app || exit 1
